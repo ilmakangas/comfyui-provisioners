@@ -16,6 +16,7 @@ PYTHON_PACKAGES=(
 
 NODES=(
     "https://github.com/ltdrdata/ComfyUI-Manager"
+    "https://github.com/11cafe/comfyui-workspace-manager"
 )
 
 CHECKPOINT_MODELS=(
@@ -40,6 +41,10 @@ ESRGAN_MODELS=(
 )
 
 CONTROLNET_MODELS=(
+)
+
+MY_WORKFLOWS=(
+    "https://raw.githubusercontent.com/ilmakangas/comfyui-provisioners/main/FluxWorkflow.json"
 )
 
 ### DO NOT EDIT BELOW HERE UNLESS YOU KNOW WHAT YOU ARE DOING ###
@@ -72,6 +77,10 @@ function provisioning_start() {
     provisioning_get_models \
         "${WORKSPACE}/storage/stable_diffusion/models/esrgan" \
         "${ESRGAN_MODELS[@]}"
+
+    provisioning_get_workflows \
+        "${WORKSPACE}/ComfyUI/my_workflows" \
+        "${MY_WORKFLOWS[@]}"
     provisioning_print_end
 }
 
@@ -117,6 +126,26 @@ function provisioning_get_models() {
     fi
 
     printf "Downloading %s model(s) to %s...\n" "${#arr[@]}" "$dir"
+    for url in "${arr[@]}"; do
+        printf "Downloading: %s\n" "${url}"
+        provisioning_download "${url}" "${dir}"
+        printf "\n"
+    done
+}
+
+function provisioning_get_workflows() {
+    if [[ -z $2 ]]; then return 1; fi
+    dir="$1"
+    mkdir -p "$dir"
+    shift
+    if [[ $DISK_GB_ALLOCATED -ge $DISK_GB_REQUIRED ]]; then
+        arr=("$@")
+    else
+        printf "WARNING: Low disk space allocation - Only the first workflow will be downloaded!\n"
+        arr=("$1")
+    fi
+
+    printf "Downloading %s workflow(s) to %s...\n" "${#arr[@]}" "$dir"
     for url in "${arr[@]}"; do
         printf "Downloading: %s\n" "${url}"
         provisioning_download "${url}" "${dir}"
