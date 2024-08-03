@@ -29,6 +29,7 @@ UNET_MODELS=(
 CLIP_MODELS=(
     "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp16.safetensors"
     "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors"
+    "https://huggingface.co/RunDiffusion/Juggernaut-X-v10/resolve/main/Juggernaut-X-RunDiffusion-NSFW.safetensors"
 )
 LORA_MODELS=(
 )
@@ -41,10 +42,6 @@ ESRGAN_MODELS=(
 )
 
 CONTROLNET_MODELS=(
-)
-
-MY_WORKFLOWS=(
-    "https://raw.githubusercontent.com/ilmakangas/comfyui-provisioners/main/FluxWorkflow.json"
 )
 
 ### DO NOT EDIT BELOW HERE UNLESS YOU KNOW WHAT YOU ARE DOING ###
@@ -77,9 +74,6 @@ function provisioning_start() {
     provisioning_get_models \
         "${WORKSPACE}/storage/stable_diffusion/models/esrgan" \
         "${ESRGAN_MODELS[@]}"
-    provisioning_get_workflows \
-        "/opt/ComfyUI/my_workflows" \
-        "${MY_WORKFLOWS[@]}"
     provisioning_print_end
 }
 
@@ -125,26 +119,6 @@ function provisioning_get_models() {
     fi
 
     printf "Downloading %s model(s) to %s...\n" "${#arr[@]}" "$dir"
-    for url in "${arr[@]}"; do
-        printf "Downloading: %s\n" "${url}"
-        provisioning_download "${url}" "${dir}"
-        printf "\n"
-    done
-}
-
-function provisioning_get_workflows() {
-    if [[ -z $2 ]]; then return 1; fi
-    dir="$1"
-    mkdir -p "$dir"
-    shift
-    if [[ $DISK_GB_ALLOCATED -ge $DISK_GB_REQUIRED ]]; then
-        arr=("$@")
-    else
-        printf "WARNING: Low disk space allocation - Only the first workflow will be downloaded!\n"
-        arr=("$1")
-    fi
-
-    printf "Downloading %s workflow(s) to %s...\n" "${#arr[@]}" "$dir"
     for url in "${arr[@]}"; do
         printf "Downloading: %s\n" "${url}"
         provisioning_download "${url}" "${dir}"
