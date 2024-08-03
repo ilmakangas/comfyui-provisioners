@@ -18,12 +18,18 @@ PYTHON_PACKAGES=(
 
 NODES=(
     "https://github.com/ltdrdata/ComfyUI-Manager"
+    "https://github.com/11cafe/comfyui-workspace-manager"
     "https://github.com/kijai/ComfyUI-SUPIR"
+    "https://github.com/kijai/ComfyUI-CCSR"
+    "https://github.com/ltdrdata/ComfyUI-Impact-Pack"
+    "https://github.com/TinyTerra/ComfyUI_tinyterraNodes"
+    "https://github.com/rgthree/rgthree-comfy"
 )
 
 CHECKPOINT_MODELS=(
     "https://huggingface.co/Kijai/SUPIR_pruned/resolve/main/SUPIR-v0F_fp16.safetensors"
     "https://huggingface.co/Kijai/SUPIR_pruned/resolve/main/SUPIR-v0Q_fp16.safetensors"
+    "https://huggingface.co/Kijai/ccsr-safetensors/resolve/main/real-world_ccsr-fp32.safetensors"
     "https://huggingface.co/SG161222/RealVisXL_V4.0_Lightning/resolve/main/RealVisXL_V4.0_Lightning.safetensors"
 )
 
