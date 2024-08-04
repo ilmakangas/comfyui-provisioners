@@ -17,6 +17,7 @@ PYTHON_PACKAGES=(
 NODES=(
     "https://github.com/ltdrdata/ComfyUI-Manager"
     "https://github.com/11cafe/comfyui-workspace-manager"
+    "https://github.com/GreenLandisaLie/AuraSR-ComfyUI"
 )
 
 CHECKPOINT_MODELS=(
@@ -42,6 +43,11 @@ ESRGAN_MODELS=(
 )
 
 CONTROLNET_MODELS=(
+)
+
+declare -A AURASR_FILES=(
+    ["https://huggingface.co/fal/AuraSR/resolve/main/model.safetensors"]="model.safetensors"
+    ["https://huggingface.co/fal/AuraSR/resolve/main/config.json"]="config.json"
 )
 
 ### DO NOT EDIT BELOW HERE UNLESS YOU KNOW WHAT YOU ARE DOING ###
@@ -74,6 +80,9 @@ function provisioning_start() {
     provisioning_get_models \
         "${WORKSPACE}/storage/stable_diffusion/models/esrgan" \
         "${ESRGAN_MODELS[@]}"
+    provisioning_get_models_map \
+        "${WORKSPACE}/storage/stable_diffusion/models/Aura-SR" \
+        AURASR_FILES
     provisioning_print_end
 }
 
@@ -122,6 +131,23 @@ function provisioning_get_models() {
     for url in "${arr[@]}"; do
         printf "Downloading: %s\n" "${url}"
         provisioning_download "${url}" "${dir}"
+        printf "\n"
+    done
+}
+
+function provisioning_get_models_map() {
+    if [[ -z $2 ]]; then return 1; fi
+    dir="$1"
+    mkdir -p "$dir"
+    shift
+    local -n arr=$1
+
+    printf "Downloading %s model(s) to %s...\n" "${#arr[@]}" "$dir"
+    for url in "${!arr[@]}"; do
+        fn="${arr[$url]}"
+        printf "Downloading: %s as %s\n" "${url}" "${fn}"
+        
+        provisioning_download "${url}" "${dir}/${fn}"
         printf "\n"
     done
 }
