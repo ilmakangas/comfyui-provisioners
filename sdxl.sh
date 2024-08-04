@@ -156,7 +156,7 @@ function provisioning_get_models_map() {
     dir="$1"
     mkdir -p "$dir"
     shift
-    local -n arr=$2
+    local -n arr=$1
 
     printf "Downloading %s model(s) to %s...\n" "${#arr[@]}" "$dir"
     for url in "${!arr[@]}"; do
