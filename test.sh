@@ -46,7 +46,7 @@ CONTROLNET_MODELS=(
 )
 
 declare -A IPADAPTER_MODELS=(
-    ["https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter_sdxl_vit-h.safetensors"]="ip-adapter_sdxl_vit-h.safetensors"
+    ["https://hugcivitaigingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter_sdxl_vit-h.safetensors"]="ip-adapter_sdxl_vit-h.safetensors"
     ["https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter-plus_sdxl_vit-h.safetensors"]="ip-adapter-plus_sdxl_vit-h.safetensors"
     ["https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter-plus-face_sdxl_vit-h.safetensors"]="ip-adapter-plus-face_sdxl_vit-h.safetensors"
     ["https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter_sdxl.safetensors"]="ip-adapter_sdxl.safetensors"
@@ -80,6 +80,11 @@ function provisioning_get_models_map() {
     for url in "${!arr[@]}"; do
         fn="${arr[$url]}"
         printf "Downloading: %s as %s\n" "${url}" "${fn}"
+        if [[ "${url}" == *"civitai"* ]]; then
+            printf "civitai\n"
+        else
+            printf "hf\n"
+        fi
         printf "\n"
     done
 }

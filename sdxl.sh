@@ -13,19 +13,32 @@ if [ -z "${HF_TOKEN}" ]; then
     exit 1
 fi
 
+if [ -z "${CIVITAI_TOKEN}" ]; then
+    echo "CIVITAI_TOKEN is not set. Exiting."
+    exit 1
+fi
+
 PYTHON_PACKAGES=(
 )
 
 NODES=(
     "https://github.com/ltdrdata/ComfyUI-Manager"
+    "https://github.com/11cafe/comfyui-workspace-manager"
     "https://github.com/ltdrdata/ComfyUI-Impact-Pack"
     "https://github.com/ltdrdata/ComfyUI-Inspire-Pack"
     "https://github.com/civitai/comfy-nodes"
+    "https://github.com/cubiq/ComfyUI_IPAdapter_plus"
     "https://github.com/Gourieff/comfyui-reactor-node"
     "https://github.com/Lerc/canvas_tab"
+    "https://github.com/rgthree/rgthree-comfy"
+    "https://github.com/kijai/ComfyUI-KJNodes"
+    "https://github.com/cubiq/ComfyUI_essentials"
 )
 
 CHECKPOINT_MODELS=(
+    "https://huggingface.co/RunDiffusion/Juggernaut-X-v10/resolve/main/Juggernaut-X-RunDiffusion-NSFW.safetensors"
+    "https://huggingface.co/SG161222/RealVisXL_V4.0/resolve/main/RealVisXL_V4.0.safetensors"
+    "https://huggingface.co/LyliaEngine/ponyRealism_v21MainVAE/resolve/main/ponyRealism_v21MainVAE.safetensors"
 )
 
 UNET_MODELS=(
@@ -34,6 +47,12 @@ UNET_MODELS=(
 CLIP_MODELS=(
 )
 LORA_MODELS=(
+    "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl_lora.safetensors"
+    "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl_lora.safetensors"
+)
+
+declare -A LORA_MODELS_MAP=(
+    ["https://civitai.com/api/download/models/340833?type=Model&format=SafeTensor"]="skinrealism-reworked.safetensors"
 )
 
 VAE_MODELS=(
@@ -56,6 +75,10 @@ declare -A IPADAPTER_MODELS=(
     ["https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter-plus_sdxl_vit-h.safetensors"]="ip-adapter-plus_sdxl_vit-h.safetensors"
     ["https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter-plus-face_sdxl_vit-h.safetensors"]="ip-adapter-plus-face_sdxl_vit-h.safetensors"
     ["https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter_sdxl.safetensors"]="ip-adapter_sdxl.safetensors"
+    ["https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl.bin"]="ip-adapter-faceid_sdxl.bin"
+    ["https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl.bin"]="ip-adapter-faceid-plusv2_sdxl.bin"
+    ["https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-portrait_sdxl.bin"]="ip-adapter-faceid-portrait_sdxl.bin"
+    ["https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-portrait_sdxl_unnorm.bin"]="ip-adapter-faceid-portrait_sdxl_unnorm.bin"
 )
 
 declare -A CLIP_VISION_MODELS=(
@@ -78,6 +101,9 @@ function provisioning_start() {
     provisioning_get_models \
         "${WORKSPACE}/storage/stable_diffusion/models/lora" \
         "${LORA_MODELS[@]}"
+    provisioning_get_models_map \
+        "${WORKSPACE}/storage/stable_diffusion/models/lora" \
+        LORA_MODELS_MAP
     provisioning_get_models \
         "${WORKSPACE}/storage/stable_diffusion/models/controlnet" \
         "${CONTROLNET_MODELS[@]}"
@@ -162,6 +188,7 @@ function provisioning_get_models_map() {
     for url in "${!arr[@]}"; do
         fn="${arr[$url]}"
         printf "Downloading: %s as %s\n" "${url}" "${fn}"
+        
         provisioning_download "${url}" "${dir}/${fn}"
         printf "\n"
     done
@@ -179,7 +206,11 @@ function provisioning_print_end() {
 
 # Download from $1 URL to $2 file path
 function provisioning_download() {
-    wget --header="Authorization: Bearer $HF_TOKEN" -qnc --content-disposition --show-progress -e dotbytes="${3:-4M}" -P "$2" "$1"
+    if [[ "$1" == *"civitai"* ]]; then
+        curl -L -H "Content-Type: application/json" -H "Authorization: Bearer $CIVITAI_TOKEN" "$1" --output "$2"
+    else
+        wget --header="Authorization: Bearer $HF_TOKEN" -qnc --content-disposition --show-progress -e dotbytes="${3:-4M}" -P "$2" "$1"
+    fi
 }
 
 provisioning_start
