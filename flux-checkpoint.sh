@@ -22,21 +22,18 @@ NODES=(
 
 CHECKPOINT_MODELS=(
     "https://huggingface.co/RunDiffusion/Juggernaut-X-v10/resolve/main/Juggernaut-X-RunDiffusion-NSFW.safetensors"
+    "https://huggingface.co/StableDiffusionVN/Flux/resolve/main/Checkpoint/Flux_dev_v1.safetensors"
 )
 
 UNET_MODELS=(
-    "https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.sft"
 )
 
 CLIP_MODELS=(
-    "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp16.safetensors"
-    "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors"
 )
 LORA_MODELS=(
 )
 
 VAE_MODELS=(
-    "https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/ae.sft"
 )
 
 ESRGAN_MODELS=(
