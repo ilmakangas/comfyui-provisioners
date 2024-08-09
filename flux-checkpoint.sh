@@ -17,11 +17,11 @@ PYTHON_PACKAGES=(
 NODES=(
     "https://github.com/ltdrdata/ComfyUI-Manager"
     "https://github.com/11cafe/comfyui-workspace-manager"
+    "https://github.com/rgthree/rgthree-comfy"
     "https://github.com/GreenLandisaLie/AuraSR-ComfyUI"
 )
 
 CHECKPOINT_MODELS=(
-    "https://huggingface.co/RunDiffusion/Juggernaut-X-v10/resolve/main/Juggernaut-X-RunDiffusion-NSFW.safetensors"
     "https://huggingface.co/StableDiffusionVN/Flux/resolve/main/Checkpoint/Flux_dev_v1.safetensors"
 )
 
@@ -31,6 +31,7 @@ UNET_MODELS=(
 CLIP_MODELS=(
 )
 LORA_MODELS=(
+    "https://huggingface.co/comfyanonymous/flux_RealismLora_converted_comfyui/resolve/main/flux_realism_lora.safetensors"
 )
 
 VAE_MODELS=(
@@ -144,7 +145,7 @@ function provisioning_get_models_map() {
         fn="${arr[$url]}"
         printf "Downloading: %s as %s\n" "${url}" "${fn}"
         
-        provisioning_download "${url}" "${dir}/${fn}"
+        provisioning_download_outpath "${url}" "${dir}/${fn}"
         printf "\n"
     done
 }
@@ -165,4 +166,7 @@ function provisioning_download() {
     wget --header="Authorization: Bearer $HF_TOKEN" -qnc --content-disposition --show-progress -e dotbytes="${3:-4M}" -P "$2" "$1"
 }
 
+function provisioning_download_outpath() {
+    wget --header="Authorization: Bearer $HF_TOKEN" -qnc --content-disposition --show-progress -e dotbytes="${3:-4M}" -O "$2" "$1"
+}
 provisioning_start
